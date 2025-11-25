@@ -1,7 +1,6 @@
 package com.gbg.productservice.presentation.controller;
 
 import com.gbg.productservice.application.service.ProductService;
-import com.gbg.productservice.domain.entity.Product;
 import com.gbg.productservice.presentation.dto.request.ProductCreateRequest;
 import com.gbg.productservice.presentation.dto.response.ProductResponse;
 import java.util.List;
