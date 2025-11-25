@@ -2,9 +2,12 @@ package com.gbg.orderservice.presentiation.controller;
 
 import com.gbg.orderservice.application.service.OrderService;
 import com.gbg.orderservice.presentiation.dto.request.OrderCreateRequest;
+import com.gbg.orderservice.presentiation.dto.response.OrderResponse;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,5 +29,14 @@ public class OrderController {
         UUID orderId = orderService.createOrder(userId, orderCreateRequest);
 
         return ResponseEntity.ok().body(orderId);
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<OrderResponse>> orderList(
+        @PathVariable("userId") UUID userId
+    ) {
+        List<OrderResponse> orderList = orderService.orderList(userId);
+
+        return ResponseEntity.ok().body(orderList);
     }
 }

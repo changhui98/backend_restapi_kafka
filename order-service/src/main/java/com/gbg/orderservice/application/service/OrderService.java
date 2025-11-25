@@ -3,6 +3,8 @@ package com.gbg.orderservice.application.service;
 import com.gbg.orderservice.domain.entity.Order;
 import com.gbg.orderservice.infrastructre.repoisotry.OrderJpaRepository;
 import com.gbg.orderservice.presentiation.dto.request.OrderCreateRequest;
+import com.gbg.orderservice.presentiation.dto.response.OrderResponse;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,5 +24,14 @@ public class OrderService {
         orderJpaRepository.save(order);
 
         return order.getOrderId();
+    }
+
+    public List<OrderResponse> orderList(UUID userId) {
+
+        List<Order> orderList = orderJpaRepository.findByUserId(userId);
+
+        return orderList.stream()
+            .map(OrderResponse::fromEntity)
+            .toList();
     }
 }
