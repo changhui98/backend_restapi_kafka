@@ -1,4 +1,4 @@
-package com.gbg.sagaorchestrator.producer;
+package com.gbg.sagaorchestrator.infrastructure.producer;
 
 import java.util.HashMap;
 import java.util.Map;

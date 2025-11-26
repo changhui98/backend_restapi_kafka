@@ -1,4 +1,4 @@
-package com.gbg.sagaorchestrator.dto;
+package com.gbg.sagaorchestrator.presentation.dto;
 
 import java.util.UUID;
 
