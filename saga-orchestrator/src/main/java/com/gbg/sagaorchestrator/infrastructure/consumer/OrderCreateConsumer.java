@@ -46,6 +46,7 @@ public class OrderCreateConsumer {
     @KafkaListener(topics = "user.validate.response")
     @Transactional
     public void onUserValidateResponse(String message) throws Exception {
+        log.info("5. 유저 서비스 -> 사가 오케스트레이션 메시지 받기 성공");
         UserValidator event = objectMapper.readValue(message, UserValidator.class);
 
         log.info("유저서비스 -> 사가 오케스트레이션 토픽 메시지 전달 성공");
@@ -54,7 +55,7 @@ public class OrderCreateConsumer {
 
         SagaOrderState sagaOrderState = sagaOrderStateJpaRepository.findByOrderId(event.orderId());
 
-        if (event.request().equals("success")) {
+        if (event.request().equalsIgnoreCase("success")) {
             sagaOrderState.setStatus(SagaStatus.USER_VALIDATED);
         } else {
             // 보상 트랜 잭션 실행
