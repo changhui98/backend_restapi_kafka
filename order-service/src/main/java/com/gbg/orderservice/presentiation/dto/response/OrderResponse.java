@@ -17,9 +17,9 @@ public class OrderResponse {
 
     private UUID orderId;
     private String productCode;
-    private int qty;
-    private int unitPrice;
-    private int totalPrice;
+    private Integer qty;
+    private Integer unitPrice;
+    private Integer totalPrice;
 
     public static OrderResponse fromEntity(Order order) {
         OrderResponse response = new OrderResponse();

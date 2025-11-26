@@ -21,12 +21,12 @@ public class Order {
     private UUID orderId;
 
     private String productCode;
-    private int qty;
-    private int unitPrice;
-    private int totalPrice;
+    private Integer qty;
+    private Integer unitPrice;
+    private Integer totalPrice;
     private UUID userId;
 
-    public static Order of(String productCode, int qty, int unitPrice, int totalPrice, UUID userId) {
+    public static Order of(String productCode, Integer qty, Integer unitPrice, Integer totalPrice, UUID userId) {
         Order order = new Order();
         order.productCode = productCode;
         order.qty = qty;
@@ -36,7 +36,7 @@ public class Order {
         return order;
     }
 
-    private Order(UUID orderId, String productCode, int qty, int unitPrice, int totalPrice,
+    private Order(UUID orderId, String productCode, Integer qty, Integer unitPrice, Integer totalPrice,
         UUID userId) {
         this.orderId = orderId;
         this.productCode = productCode;
