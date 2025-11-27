@@ -19,30 +19,18 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID orderId;
-
-    private String productCode;
-    private Integer qty;
-    private Integer unitPrice;
-    private Integer totalPrice;
     private UUID userId;
+    private UUID couponId;
+    private Integer originalAmount;
+    private Integer finalAmount;
+    private Integer discountAmount;
+    private OrderStatus orderStatus;
+    private String paymentMethod;
+    private String recipientName;
+    private String recipientPhone;
+    private String zipcode;
+    private String address1;
+    private String address2;
+    private String deliveryMessage;
 
-    public static Order of(String productCode, Integer qty, Integer unitPrice, Integer totalPrice, UUID userId) {
-        Order order = new Order();
-        order.productCode = productCode;
-        order.qty = qty;
-        order.unitPrice = unitPrice;
-        order.totalPrice = totalPrice;
-        order.userId = userId;
-        return order;
-    }
-
-    private Order(UUID orderId, String productCode, Integer qty, Integer unitPrice, Integer totalPrice,
-        UUID userId) {
-        this.orderId = orderId;
-        this.productCode = productCode;
-        this.qty = qty;
-        this.unitPrice = unitPrice;
-        this.totalPrice = totalPrice;
-        this.userId = userId;
-    }
 }
