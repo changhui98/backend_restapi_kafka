@@ -1,4 +1,4 @@
-package com.gbg.sagaorchestrator.presentation.dto;
+package com.gbg.sagaorchestrator.infrastructure.messaging.dto;
 
 import java.util.UUID;
 

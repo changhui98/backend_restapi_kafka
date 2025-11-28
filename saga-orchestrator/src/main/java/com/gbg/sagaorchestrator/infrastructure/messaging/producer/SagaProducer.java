@@ -1,8 +1,8 @@
-package com.gbg.sagaorchestrator.infrastructure.producer;
+package com.gbg.sagaorchestrator.infrastructure.messaging.producer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gbg.sagaorchestrator.presentation.dto.UserValidatorRequestEvent;
+import com.gbg.sagaorchestrator.infrastructure.messaging.dto.UserValidatorEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserValidationProducer {
+public class SagaProducer {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public void sendUserValidation(UserValidatorRequestEvent event) {
+    public void sendUserService(UserValidatorEvent event) {
         try {
 
             String message = objectMapper.writeValueAsString(event);

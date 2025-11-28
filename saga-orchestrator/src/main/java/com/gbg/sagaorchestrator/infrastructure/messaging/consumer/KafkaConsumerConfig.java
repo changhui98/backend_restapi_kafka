@@ -1,4 +1,4 @@
-package com.gbg.sagaorchestrator.infrastructure.consumer;
+package com.gbg.sagaorchestrator.infrastructure.messaging.consumer;
 
 
 import java.util.HashMap;

@@ -1,10 +1,10 @@
 package com.gbg.sagaorchestrator.infrastructure.repository;
 
-import com.gbg.sagaorchestrator.domain.entity.SagaOrderState;
+import com.gbg.sagaorchestrator.domain.entity.SagaState;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface SagaOrderStateJpaRepository extends JpaRepository<SagaOrderState, UUID> {
+public interface SagaOrderStateJpaRepository extends JpaRepository<SagaState, UUID> {
 
-    SagaOrderState findByOrderId(UUID orderId);
+    SagaState findByOrderId(UUID orderId);
 }
