@@ -1,13 +1,12 @@
 package com.gbg.orderservice.application.service;
 
 import com.gbg.orderservice.domain.entity.Order;
-import com.gbg.orderservice.infrastructre.producer.OrderCreateProducer;
+import com.gbg.orderservice.domain.entity.OrderItem;
+import com.gbg.orderservice.infrastructre.messaging.dto.SagaStartedEvent;
+import com.gbg.orderservice.infrastructre.messaging.producer.OrderProducer;
 import com.gbg.orderservice.infrastructre.repoisotry.OrderJpaRepository;
 import com.gbg.orderservice.presentiation.dto.request.OrderCreateRequest;
-import com.gbg.orderservice.presentiation.dto.request.OrderCreateRequestEvent;
-import com.gbg.orderservice.presentiation.dto.request.OrderCreateRequestV2;
-import com.gbg.orderservice.presentiation.dto.response.OrderResponse;
-import java.util.List;
+import com.gbg.orderservice.presentiation.dto.request.OrderCreateRequest.OrderItemCreateRequest;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,43 +16,46 @@ import org.springframework.stereotype.Service;
 public class OrderService {
 
     private final OrderJpaRepository orderJpaRepository;
-    private final OrderCreateProducer orderCreateProducer;
+    private final OrderProducer orderProducer;
 
-    public UUID createOrder(UUID userId, OrderCreateRequest orderCreateRequest) {
+    public UUID createOrder(UUID userId, OrderCreateRequest req) {
 
-        Order order = Order.of(orderCreateRequest.productCode(), orderCreateRequest.qty(),
-            orderCreateRequest.unitPrice(),
-            orderCreateRequest.qty() * orderCreateRequest.unitPrice(), userId);
-
-        orderJpaRepository.save(order);
-
-        return order.getOrderId();
-    }
-
-    public List<OrderResponse> orderList(UUID userId) {
-
-        List<Order> orderList = orderJpaRepository.findByUserId(userId);
-
-        return orderList.stream()
-            .map(OrderResponse::fromEntity)
-            .toList();
-    }
-
-    public void createOrderV2(UUID userId, OrderCreateRequestV2 dto) {
-
-        OrderCreateRequestEvent event = new OrderCreateRequestEvent(
-            UUID.randomUUID(),
+        // 1. Create Order
+        Order order = Order.of(
             userId,
-            dto.productId(),
-            dto.qty(),
-            dto.recipientName(),
-            dto.recipientPhone(),
-            dto.zipcode(),
-            dto.address1(),
-            dto.address2(),
-            dto.deliveryMessage()
+            req.couponId(),
+            null,
+            null,
+            null,
+            req.paymentMethod(),
+            req.recipientName(),
+            req.recipientPhone(),
+            req.zipcode(),
+            req.address1(),
+            req.address2(),
+            req.deliveryMessage()
         );
 
-        orderCreateProducer.sendOrderCreateEvent(event);
+        // 2. OrderItem Create Then Add Order
+        for (OrderItemCreateRequest item : req.items()) {
+            OrderItem orderItem = OrderItem.of(
+                item.productId(),
+                item.itemPromotionId(),
+                item.stock(),
+                null,
+                null,
+                null
+            );
+            order.addItem(orderItem);
+        }
+
+        // 3. Order Plus OrderItem Save
+        Order saveOrder = orderJpaRepository.save(order);
+
+        // 4. event push -> saga-orchestrator
+        SagaStartedEvent event = SagaStartedEvent.from(order);
+        orderProducer.send(event);
+
+        return saveOrder.getOrderId();
     }
 }
