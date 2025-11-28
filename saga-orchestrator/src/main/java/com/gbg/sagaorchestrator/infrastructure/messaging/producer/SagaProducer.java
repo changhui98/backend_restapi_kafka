@@ -22,7 +22,6 @@ public class SagaProducer {
 
             String message = objectMapper.writeValueAsString(event);
             kafkaTemplate.send("user.validate.request",
-                event.orderId().toString(),
                 message);
             log.info("send success -> user validate {}", message);
 

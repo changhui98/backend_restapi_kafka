@@ -29,16 +29,13 @@ public class User {
     @Column(name = "user_pw")
     private String password;
 
+    private UserStatus status;
+
     public static User of(String username, String password) {
         User user = new User();
         user.username = username;
         user.password = password;
+        user.status = UserStatus.ACTIVE;
         return user;
-    }
-
-    private User(UUID id, String username, String password) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
     }
 }

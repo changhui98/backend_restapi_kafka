@@ -1,6 +1,8 @@
 package com.gbg.orderservice.domain.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,6 +26,9 @@ public class OrderItem {
     private UUID orderItemId;
     private UUID productId;
     private UUID itemPromotionId;
+
+    @Enumerated(EnumType.STRING)
+    private OrderItemStatus status;
     private Integer stock;
     private Integer unitPrice;
     private Integer finalPrice;
@@ -32,6 +37,10 @@ public class OrderItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
+
+    public void updateStatus(OrderItemStatus status) {
+        this.status = status;
+    }
 
     public static OrderItem of(
         UUID productId,
@@ -48,6 +57,7 @@ public class OrderItem {
         orderItem.unitPrice = unitPrice;
         orderItem.finalPrice = finalPrice;
         orderItem.itemDiscountAmount = itemDiscountAmount;
+        orderItem.status = OrderItemStatus.PENDING;
 
         return orderItem;
     }

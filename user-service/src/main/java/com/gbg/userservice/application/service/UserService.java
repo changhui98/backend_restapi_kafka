@@ -3,6 +3,10 @@ package com.gbg.userservice.application.service;
 import com.gbg.userservice.domain.entity.User;
 import com.gbg.userservice.domain.repository.UserRepository;
 import com.gbg.userservice.infrastructure.client.OrderClient;
+import com.gbg.userservice.infrastructure.kafka.event.command.UserValidateFailEvent;
+import com.gbg.userservice.infrastructure.kafka.event.command.UserValidateSuccessEvent;
+import com.gbg.userservice.infrastructure.kafka.event.request.UserValidateEvent;
+import com.gbg.userservice.infrastructure.kafka.producer.UserProducer;
 import com.gbg.userservice.presentation.dto.request.UserSignRequest;
 import com.gbg.userservice.presentation.dto.response.OrderResponse;
 import com.gbg.userservice.presentation.dto.response.UserResponse;
@@ -17,6 +21,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final OrderClient orderClient;
+    private final UserProducer userProducer;
 
     public UUID createUser(UserSignRequest userSignRequest) {
 
@@ -39,6 +44,25 @@ public class UserService {
         userResponse.setOrders(getOrder(userId));
 
         return userResponse;
+    }
+
+    public void validateUser(UserValidateEvent event) {
+
+        User user = userRepository.findById(event.userId()).orElse(null);
+        if (user == null) {
+            userProducer.validatorRequest("user-validate-fail"
+                , new UserValidateFailEvent(
+                    event.orderId(),
+                    event.userId(),
+                    "user-not-found"
+                ));
+        }
+
+        userProducer.validatorRequest("user-validate-success",
+            new UserValidateSuccessEvent(
+                event.orderId(),
+                event.userId()
+            ));
     }
 
     private List<OrderResponse> getOrder(UUID userId) {

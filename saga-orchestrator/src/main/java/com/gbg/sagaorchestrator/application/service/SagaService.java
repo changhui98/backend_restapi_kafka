@@ -5,7 +5,8 @@ import com.gbg.sagaorchestrator.domain.entity.SagaStatus;
 import com.gbg.sagaorchestrator.infrastructure.messaging.event.outcome.OrderCreateFailedEvent;
 import com.gbg.sagaorchestrator.infrastructure.messaging.event.request.OrderCreateRequestEvent;
 import com.gbg.sagaorchestrator.infrastructure.messaging.event.command.UserValidateCommand;
-import com.gbg.sagaorchestrator.infrastructure.messaging.event.request.UserValidateRequestEvent;
+import com.gbg.sagaorchestrator.infrastructure.messaging.event.result.UserValidateFailEvent;
+import com.gbg.sagaorchestrator.infrastructure.messaging.event.result.UserValidateSuccessEvent;
 import com.gbg.sagaorchestrator.infrastructure.messaging.producer.SagaProducer;
 import com.gbg.sagaorchestrator.infrastructure.repository.SagaOrderStateJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class SagaService {
 
         SagaState sagaState = SagaState.of(
             event.orderId(),
-            "order create join",
+            "order-create-join",
             SagaStatus.SUCCESS,
             "success"
         );
@@ -40,23 +41,28 @@ public class SagaService {
         sagaProducer.sendUserValidate(new UserValidateCommand(event.orderId(), event.userId()));
     }
 
-    public void userProcess(UserValidateRequestEvent event) {
+    public void userValidateSuccess(UserValidateSuccessEvent event) {
 
         SagaState saga = repository.findByOrderId(event.orderId());
-        saga.updateStep("user validate");
-
-        if (!event.request().equalsIgnoreCase("success")) {
-            saga.updateStatus(SagaStatus.FAILED);
-            sagaProducer.sendOrderFailed(new OrderCreateFailedEvent(
-                saga.getId(),
-                saga.getOrderId(),
-                "사용자 검증 실패: 존재하지 않는 사용자입니다.",
-                "USER_NOT_FOUND",
-                "USER-SERVICE"
-            ));
-        }
-
+        saga.updateStep("user-validate");
         saga.updateStatus(SagaStatus.USER_VALIDATED);
+        saga.updateDetail("user-validated-successfully");
     }
 
+    @Transactional
+    public void userValidateFail(UserValidateFailEvent event) {
+
+        SagaState saga = repository.findByOrderId(event.orderId());
+        saga.updateStep("user-validate-failed");
+        saga.updateStatus(SagaStatus.USER_VALIDATED_FAILED);
+        saga.updateDetail(event.message());
+
+        sagaProducer.sendOrderFailed(new OrderCreateFailedEvent(
+            saga.getId(),
+            saga.getOrderId(),
+            "USER_NOT_FOUND",
+            "SAGA001",
+            "USER-SERVICE"
+        ));
+    }
 }

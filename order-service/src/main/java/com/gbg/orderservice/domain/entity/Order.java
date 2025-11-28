@@ -2,6 +2,8 @@ package com.gbg.orderservice.domain.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,6 +30,8 @@ public class Order {
     private Integer originalAmount;
     private Integer finalAmount;
     private Integer discountAmount;
+
+    @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
     private String paymentMethod;
     private String recipientName;
@@ -38,6 +42,10 @@ public class Order {
     private String deliveryMessage;
     @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
+
+    public void updateStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
 
     public static Order of(
         UUID userId,
