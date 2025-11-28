@@ -1,4 +1,4 @@
-package com.gbg.orderservice.infrastructre.messaging.dto;
+package com.gbg.orderservice.infrastructure.messaging.event;
 
 import com.gbg.orderservice.domain.entity.OrderItem;
 import java.util.UUID;

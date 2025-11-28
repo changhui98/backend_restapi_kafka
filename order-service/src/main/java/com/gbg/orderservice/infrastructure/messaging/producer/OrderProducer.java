@@ -1,9 +1,8 @@
-package com.gbg.orderservice.infrastructre.messaging.producer;
+package com.gbg.orderservice.infrastructure.messaging.producer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gbg.orderservice.infrastructre.messaging.dto.SagaStartedEvent;
-import com.gbg.orderservice.presentiation.dto.request.OrderCreateRequestEvent;
+import com.gbg.orderservice.infrastructure.messaging.event.SagaStartedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -18,7 +17,10 @@ public class OrderProducer {
     public void send(SagaStartedEvent event) {
         try {
             String message = objectMapper.writeValueAsString(event);
-            kafkaTemplate.send("order.create.request", message);
+            kafkaTemplate.send(
+                "order.create.request",
+                event.orderId().toString(),
+                message);
         } catch (JsonProcessingException e) {
 
             throw new RuntimeException("Json 역직렬화 실패 " + e.getMessage());

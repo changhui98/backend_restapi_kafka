@@ -1,4 +1,4 @@
-package com.gbg.orderservice.infrastructre.messaging.dto;
+package com.gbg.orderservice.infrastructure.messaging.event;
 
 import com.gbg.orderservice.domain.entity.Order;
 import java.util.List;

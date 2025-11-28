@@ -17,7 +17,7 @@ public class UserProducer {
     private final ObjectMapper objectMapper =  new ObjectMapper();
     String message;
 
-    public ValidatorRequest validatorRequest(String topic, ValidatorRequest req) {
+    public void validatorRequest(String topic, ValidatorRequest req) {
 
         try {
             message = objectMapper.writeValueAsString(req);
@@ -25,8 +25,9 @@ public class UserProducer {
             log.error("Error serializing validator request", e);
         }
 
-        kafkaTemplate.send(topic, message);
-        return req;
+        kafkaTemplate.send(topic,
+            req.orderId().toString(),
+            message);
     }
 
 

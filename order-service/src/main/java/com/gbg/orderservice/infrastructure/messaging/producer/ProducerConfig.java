@@ -1,4 +1,4 @@
-package com.gbg.orderservice.infrastructre.messaging.producer;
+package com.gbg.orderservice.infrastructure.messaging.producer;
 
 import java.util.HashMap;
 import java.util.Map;

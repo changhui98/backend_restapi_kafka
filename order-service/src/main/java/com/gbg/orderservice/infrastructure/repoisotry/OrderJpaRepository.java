@@ -1,4 +1,4 @@
-package com.gbg.orderservice.infrastructre.repoisotry;
+package com.gbg.orderservice.infrastructure.repoisotry;
 
 import com.gbg.orderservice.domain.entity.Order;
 import java.util.List;

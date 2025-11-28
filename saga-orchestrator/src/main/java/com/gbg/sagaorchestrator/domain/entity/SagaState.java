@@ -8,16 +8,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.UUID;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "p_saga_order_state")
 @Getter
-@Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class SagaState {
 
@@ -45,6 +44,18 @@ public class SagaState {
     //        “재고 차감 성공 - itemId=xxx, remain=10”
     //    장애 분석·모니터링에 필수.
     private String detail;
+
+    public void updateStep(String step) {
+        this.step = step;
+    }
+
+    public void updateStatus(SagaStatus status) {
+        this.status = status;
+    }
+
+    public void updateDetail(String detail) {
+        this.detail = detail;
+    }
 
     public static SagaState of(
         UUID orderId,

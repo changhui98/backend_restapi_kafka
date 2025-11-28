@@ -2,7 +2,8 @@ package com.gbg.sagaorchestrator.infrastructure.messaging.producer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gbg.sagaorchestrator.infrastructure.messaging.dto.UserValidatorEvent;
+import com.gbg.sagaorchestrator.infrastructure.messaging.event.command.UserValidateCommand;
+import com.gbg.sagaorchestrator.infrastructure.messaging.event.outcome.OrderCreateFailedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -16,14 +17,32 @@ public class SagaProducer {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public void sendUserService(UserValidatorEvent event) {
+    public void sendUserValidate(UserValidateCommand event) {
         try {
 
             String message = objectMapper.writeValueAsString(event);
-            log.info("2. 유저 서비스로 유저 검증 메시지 보내기");
-            kafkaTemplate.send("user.validate.request", message);
+            kafkaTemplate.send("user.validate.request",
+                event.orderId().toString(),
+                message);
+            log.info("send success -> user validate {}", message);
+
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Json 직렬화 실패" + e.getMessage());
+
+            log.error("send failed -> user validate {}", e.getMessage());
+        }
+    }
+
+    public void sendOrderFailed(OrderCreateFailedEvent event) {
+
+        try {
+
+            String message = objectMapper.writeValueAsString(event);
+            kafkaTemplate.send("order.create.failed", message);
+            log.info("send success ->  order failed {}", message);
+
+        } catch (JsonProcessingException e) {
+
+            log.error("send failed -> order failed {}" , e.getMessage());
         }
     }
 
